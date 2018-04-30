@@ -19,9 +19,14 @@ pub fn rotate<'a>(lst: &'a [i32]) -> Vec<i32> {
     for i in lst.iter() {
         res.push(*i);
     }
-    let tmp = &res.remove(0);
-    res.push(*tmp);
-    res
+    
+    if res.len() == 0 {
+    	res
+    } else {
+    	let tmp = &res.remove(0);
+    	res.push(*tmp);
+    	res
+    }
 }
 
 /// Checks if any of the words in the first string matches the second string.

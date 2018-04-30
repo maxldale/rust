@@ -15,17 +15,50 @@ impl <T: Eq + PartialOrd> BST<T> {
 
     /// Inserts the given element into the BST
     pub fn insert(&mut self, ele: T) -> () {
-        ()
+    	match *self {
+    		BST::Leaf => {
+    			*self = BST::Node(ele, Box::new(BST::Leaf), Box::new(BST::Leaf));
+    		},
+    		BST::Node(ref val, ref mut l, ref mut r) => {
+    			if &ele >= val {
+    				r.insert(ele);
+    			} else {
+    				l.insert(ele);
+    			}
+    		}
+    	}
     }
 
     /// Checks if the given element is in the BST
     pub fn mem(&self, ele: &T) -> bool {
-        false
+        match *self {
+        	BST::Leaf => false,
+        	BST::Node(ref val, ref l, ref r) => {
+        		if ele == val {
+        			true
+        		} else if ele < val {
+        			l.mem(ele)
+        		} else {
+        			r.mem(ele)
+        		}
+        	}
+        }
     }
 
     /// Converts the BST to a sorted list of elements.  You may want to use a helper for this one.
     pub fn to_list(&self) -> Vec<&T> {
-        Vec::new()
+    	let mut vec = Vec::new();
+        match *self {
+        	BST::Leaf => vec,
+        	BST::Node(ref val, ref l, ref r) => {
+        		let left = &mut l.to_list();
+        		let right = &mut r.to_list();
+        		vec.append(left);
+        		vec.push(val);
+        		vec.append(right);
+        		vec
+        	}
+        }
     }
 }
 
@@ -34,7 +67,7 @@ impl <'a, T: Eq + PartialOrd> IntoIterator for &'a BST<T> {
     type Item = &'a T;
     type IntoIter = ::std::vec::IntoIter<&'a T>;
     fn into_iter(self) -> Self::IntoIter {
-        Vec::new().into_iter()
+        self.to_list().into_iter()
     }
 }
 

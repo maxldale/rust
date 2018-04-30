@@ -16,14 +16,24 @@ pub trait Queue<T> {
 impl <T> Queue<T> for Vec<T> {
 
     fn enqueue(&mut self, ele: T) -> () {
-        ()
+        self.push(ele)
     }
 
     fn peek(&self) -> Option<&T> {
-        None
+    	if self.len() == 0 {
+    		None
+    	} else {
+    		let first: &T = &self[0];
+        	Some(first)
+        }
     }
 
     fn poll(&mut self) -> Option<T> {
-        None
+        if self.len() == 0 {
+        	None
+        } else {
+        	let first = self.remove(0);
+        	Some(first)
+        }
     }
 }

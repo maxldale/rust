@@ -39,12 +39,46 @@ pub fn partial_sum(i: usize, is: &[i32]) -> i32 {
 ///
 /// It might be helpful to use the fold method of the Iterator trait.
 pub fn mean(lst: &[f64]) -> Option<f64> {
-    None
+	let mut counter = 0;
+	let mut sum = 0_f64;
+	for ele in lst.iter() {
+		sum += ele;
+		counter += 1;
+	}
+	
+	if counter == 0 {
+		None
+	} else {
+		let div = counter as f64;
+		let res = sum / div;
+		Some(res)
+	}
 }
 
 /// Performs a simple binary search, returning the index of the element if it was found, or None if not found
 pub fn bsearch<T: Eq + PartialOrd> (lst: &[T], ele: &T) -> Option<usize> {
-    None 
+	let len = lst.len();
+	if len == 0 {
+		None
+	} else {
+    	let mid = (len - 1) / 2;
+    	let mid_ele = &lst[mid];
+    	if ele == mid_ele {
+    		Some(mid)
+    	} else if ele < mid_ele {
+    		if mid == 0 {
+    			None
+    		} else {
+    			bsearch(&lst[..mid], ele)
+    		}
+    	} else {
+    		let res = bsearch(&lst[(mid + 1)..], ele);
+    		match res {
+    			Some( index ) => Some(index + 1 + mid),
+    			None => None,
+    		}
+    	}
+    }
 }
 
 /// We have a CSV of course information. The CSV has many lines that are formatted as "<Deptartment>,<CourseNumber>,<RoomNumber>,<DaysOfWeek>".
@@ -66,5 +100,38 @@ pub fn bsearch<T: Eq + PartialOrd> (lst: &[T], ele: &T) -> Option<usize> {
 
 use std::collections::HashMap;
 pub fn get_course_data(csv_data: &str) -> (HashMap<&str,usize>,HashMap<&str,usize>,HashMap<&str,usize>)  {
-    (HashMap::new(),HashMap::new(),HashMap::new())
+	let mut dept_hash = HashMap::new();
+	let mut room_hash = HashMap::new();
+	let mut time_hash = HashMap::new();
+	let lines = csv_data.split("\n");
+	for line in lines {
+		if line == "" {
+			()
+		} else {
+			let mut data = line.split(",");
+			match data.next() {
+				Some (dept) => {
+					let count = dept_hash.entry(dept).or_insert(0);
+					*count += 1;
+				},
+				None => (),
+			};
+			data.next();
+			match data.next() {
+				Some (room) => {
+					let count = room_hash.entry(room).or_insert(0);
+					*count += 1;
+				},
+				None => (),
+			};
+			match data.next() {
+				Some (days) => {
+					let count = time_hash.entry(days).or_insert(0);
+					*count += 1;
+				},
+				None => (),
+			};
+		}
+	}
+	(dept_hash, room_hash, time_hash)
 }
